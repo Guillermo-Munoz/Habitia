@@ -1,4 +1,5 @@
 package com.habitia.users.domain;
 
-public enum UseRole {
+public enum UserRole {
+    USER, ADMIN
 }
