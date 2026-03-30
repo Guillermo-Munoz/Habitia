@@ -25,8 +25,7 @@ public class UserController {
                 new RegisterUserCommand(
                         request.fullName(),
                         request.email(),
-                        request.password(),
-                        request.role()
+                        request.password()
                 )
         );
         return ResponseEntity
@@ -46,7 +45,11 @@ public class UserController {
                 request.password()
         );
         return ResponseEntity.ok(
-                new TokenResponse(result.token(), result.userId(), result.role())
-        );
+                new TokenResponse(
+                        result.token(),
+                        result.userId(),
+                        result.role()
+                        
+                ));
     }
 }

@@ -24,7 +24,7 @@ public class AuthenticateUserUseCase {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
-        log.info("✅ AuthenticateUserUseCase inicializado");
+        log.info("AuthenticateUserUseCase inicializado");
     }
 
     public AuthTokenResult execute(String email, String password) {

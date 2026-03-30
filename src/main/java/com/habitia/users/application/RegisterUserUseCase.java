@@ -29,7 +29,7 @@ public class RegisterUserUseCase {
                 command.fullName(),
                 command.email(),
                 hashedPassword,
-                UserRole.valueOf(command.role())
+                UserRole.USER
         );
         return userRepository.save(user);
     }
