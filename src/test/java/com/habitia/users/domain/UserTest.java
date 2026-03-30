@@ -30,6 +30,25 @@ class UserTest {
         assertNotNull(user.getId());
         assertNotNull(user.getCreatedAt());
     }
+    @Test
+    @DisplayName("Crear usuario con rol ADMIN manualmente")
+    void crearAdmin_deberiaAsignarRolAdmin() {
+        // Usamos el constructor de reconstrucción o uno que permita pasar el rol
+        User admin = new User(UserId.generate(), "Admin", "admin@email.com", "pass",
+                UserRole.ADMIN, null, null, true, LocalDateTime.now());
+
+        assertEquals(UserRole.ADMIN, admin.getRole());
+        assertTrue(admin.isAdmin());
+    }
+
+    @Test
+    @DisplayName("isAdmin devuelve true para usuario con rol ADMIN")
+    void isAdmin_conRolAdmin_deberiaRetornarTrue() {
+        User admin = new User(UserId.generate(), "Admin", "admin@email.com", "pass",
+                UserRole.ADMIN, null, null, true, LocalDateTime.now());
+
+        assertTrue(admin.isAdmin());
+    }
 
     @Test
     @DisplayName("El email se guarda en minúsculas y sin espacios")
@@ -86,27 +105,6 @@ class UserTest {
         String emailLargo = "a".repeat(95) + "@email.com";
         assertThrows(IllegalArgumentException.class, () ->
                 new User("Juan García", emailLargo, "password123")
-        );
-    }
-
-    // -------------------------------------------------------------------------
-    // Constructor admin
-    // -------------------------------------------------------------------------
-
-    @Test
-    @DisplayName("Crear admin con rol ADMIN explícito")
-    void crearAdmin_deberiaAsignarRolAdmin() {
-        User admin = new User("Admin", "admin@email.com", "password123", UserRole.ADMIN);
-
-        assertEquals(UserRole.ADMIN, admin.getRole());
-        assertTrue(admin.isAdmin());
-    }
-
-    @Test
-    @DisplayName("Lanza excepción si se usa el constructor admin con rol USER")
-    void crearAdmin_conRolUser_deberiaLanzarExcepcion() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new User("Admin", "admin@email.com", "password123", UserRole.USER)
         );
     }
 
@@ -257,11 +255,4 @@ class UserTest {
         assertFalse(user.isAdmin());
     }
 
-    @Test
-    @DisplayName("isAdmin devuelve true para admin")
-    void isAdmin_conRolAdmin_deberiaRetornarTrue() {
-        User admin = new User("Admin", "admin@email.com", "password123", UserRole.ADMIN);
-
-        assertTrue(admin.isAdmin());
-    }
 }

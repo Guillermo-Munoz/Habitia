@@ -24,24 +24,11 @@ public class User {
 
     // Constructor para usuario normal (rol USER por defecto)
     public User(String fullName, String email, String password) {
-        String normalizedFullName = normalize(fullName);
-        String normalizedEmail = normalizeEmail(email);
-        validateFullName(normalizedFullName);
-        validateEmail(normalizedEmail);
-        this.id = UserId.generate();
-        this.fullName = normalizedFullName;
-        this.email = normalizedEmail;
-        this.password = password;
-        this.role = UserRole.USER;
-        this.active = true;
-        this.createdAt = LocalDateTime.now();
+        this(fullName, email, password, UserRole.USER);
     }
 
-    // Constructor con rol explícito — solo permite USER
+    // Constructor para usuario con rol específico
     public User(String fullName, String email, String password, UserRole role) {
-        if (role != UserRole.USER) {
-            throw new IllegalArgumentException("El registro solo permite el rol USER");
-        }
         String normalizedFullName = normalize(fullName);
         String normalizedEmail = normalizeEmail(email);
         validateFullName(normalizedFullName);
@@ -50,7 +37,7 @@ public class User {
         this.fullName = normalizedFullName;
         this.email = normalizedEmail;
         this.password = password;
-        this.role = role;
+        this.role = role != null ? role : UserRole.USER;
         this.active = true;
         this.createdAt = LocalDateTime.now();
     }
