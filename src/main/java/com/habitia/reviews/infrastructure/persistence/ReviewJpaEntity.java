@@ -35,7 +35,7 @@ public class ReviewJpaEntity {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private boolean isHostReview;
+    private boolean isReviewForHost;
 
     @Column(nullable = false)
     private boolean isPublic;

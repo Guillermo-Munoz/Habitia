@@ -14,7 +14,7 @@ public class Review {
     private final int rating;
     private String comment;
     private final LocalDateTime createdAt;
-    private boolean isHostReview; // true: reseña del huésped al anfitrión; false: del anfitrión al huésped
+    private boolean isReviewForHost; // true: reseña del huésped al anfitrión; false: del anfitrión al huésped
     private boolean isPublic;
     private boolean isApproved;
     private boolean isDeleted;
@@ -33,7 +33,7 @@ public class Review {
 
     /** Crea una nueva reseña con valores por defecto. */
     public Review(UUID bookingId, UUID reviewerId, int rating,
-                  String comment, boolean isHostReview, boolean isPublic) {
+                  String comment, boolean isReviewForHost, boolean isPublic) {
 
         if (bookingId == null) throw new IllegalArgumentException("Booking ID cannot be null");
         if (reviewerId == null) throw new IllegalArgumentException("Reviewer ID cannot be null");
@@ -45,7 +45,7 @@ public class Review {
         this.rating = rating;
         this.comment = validateComment(comment);
         this.createdAt = LocalDateTime.now();
-        this.isHostReview = isHostReview;
+        this.isReviewForHost = isReviewForHost;
         this.isPublic = isPublic;
         this.isApproved = false;
         this.isDeleted = false;
@@ -58,7 +58,7 @@ public class Review {
 
     /** Reconstruye una reseña desde persistencia. */
     public Review(UUID id, UUID bookingId, UUID reviewerId, int rating,
-                  String comment, LocalDateTime createdAt, boolean isHostReview,
+                  String comment, LocalDateTime createdAt, boolean isReviewForHost,
                   boolean isPublic, boolean isApproved, boolean isDeleted,
                   boolean isFlagged, boolean isVerified, boolean isEdited,
                   boolean isResponded, LocalDateTime approvedAt, LocalDateTime flaggedAt,
@@ -76,7 +76,7 @@ public class Review {
         this.rating = rating;
         this.comment = comment;
         this.createdAt = createdAt;
-        this.isHostReview = isHostReview;
+        this.isReviewForHost = isReviewForHost;
         this.isPublic = isPublic;
         this.isApproved = isApproved;
         this.isDeleted = isDeleted;
@@ -139,7 +139,7 @@ public class Review {
      */
     public void respondToReview(String response, UUID hostId) {
         if (hostId == null) throw new IllegalArgumentException("Host ID cannot be null");
-        if (!this.isHostReview) throw new IllegalStateException("Only reviews directed to the host can be responded to");
+        if (!this.isReviewForHost) throw new IllegalStateException("Only reviews directed to the host can be responded to");
         if (this.isDeleted) throw new IllegalStateException("Cannot respond to a deleted review");
         if (this.isResponded) throw new IllegalStateException("Review has already been responded to");
         if (response == null || response.trim().isEmpty()) throw new IllegalArgumentException("Response cannot be empty");

@@ -14,7 +14,7 @@ public class ReviewMapper {
         e.setRating(review.getRating());
         e.setComment(review.getComment());
         e.setCreatedAt(review.getCreatedAt());
-        e.setHostReview(review.isHostReview());
+        e.setReviewForHost(review.isReviewForHost());
         e.setPublic(review.isPublic());
         e.setApproved(review.isApproved());
         e.setDeleted(review.isDeleted());
@@ -41,7 +41,7 @@ public class ReviewMapper {
                 e.getRating(),
                 e.getComment(),
                 e.getCreatedAt(),
-                e.isHostReview(),
+                e.isReviewForHost(),
                 e.isPublic(),
                 e.isApproved(),
                 e.isDeleted(),
