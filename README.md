@@ -20,7 +20,6 @@ Los usuarios pueden publicar habitaciones, buscar disponibilidad y gestionar res
 | Orquestación | Kubernetes |
 
 ---
-
 ## Arquitectura
 
 El proyecto implementa un **monolito modular** con principios de **Domain-Driven Design (DDD)** y **Arquitectura Hexagonal (Ports & Adapters)**, organizado por **Vertical Slicing**.
