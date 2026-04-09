@@ -40,4 +40,8 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
         return jpaRepository.findByRoomId(roomId)
                 .stream().map(mapper::toDomain).toList();
     }
+    @Override
+    public boolean existsByBookingIdAndReviewerId(UUID bookingId, UUID reviewerId) {
+        return jpaRepository.existsByBookingIdAndReviewerId(bookingId, reviewerId);
+    }
 }
