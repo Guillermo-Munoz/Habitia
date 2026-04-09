@@ -44,3 +44,28 @@ CREATE TABLE IF NOT EXISTS bookings (
     message     TEXT,
     created_at  TIMESTAMPTZ NOT NULL
     );
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id              UUID PRIMARY KEY,
+    booking_id      UUID NOT NULL REFERENCES bookings(id),
+    reviewer_id     UUID NOT NULL REFERENCES users(id),
+    rating          INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment         VARCHAR(1000),
+    created_at      TIMESTAMPTZ NOT NULL,
+    is_host_review  BOOLEAN NOT NULL DEFAULT false,
+    is_public       BOOLEAN NOT NULL DEFAULT true,
+    is_approved     BOOLEAN NOT NULL DEFAULT false,
+    is_deleted      BOOLEAN NOT NULL DEFAULT false,
+    is_flagged      BOOLEAN NOT NULL DEFAULT false,
+    is_verified     BOOLEAN NOT NULL DEFAULT false,
+    is_edited       BOOLEAN NOT NULL DEFAULT false,
+    is_responded    BOOLEAN NOT NULL DEFAULT false,
+    approved_at     TIMESTAMPTZ,
+    flagged_at      TIMESTAMPTZ,
+    flag_reason     VARCHAR(255),
+    edited_at       TIMESTAMPTZ,
+    edit_count      INT NOT NULL DEFAULT 0,
+    host_response   VARCHAR(1000),
+    responded_at    TIMESTAMPTZ,
+    deleted_at      TIMESTAMPTZ
+);
