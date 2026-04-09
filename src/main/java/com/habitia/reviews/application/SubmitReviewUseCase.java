@@ -5,6 +5,8 @@ import com.habitia.reviews.domain.Review;
 import com.habitia.reviews.domain.ReviewRepository;
 import com.habitia.shared.domain.exception.BusinessRuleException;
 import com.habitia.shared.domain.exception.ResourceNotFoundException;
+import com.habitia.shared.domain.moderation.ContentModerationService;
+import com.habitia.shared.domain.moderation.ModerationResult;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,17 +14,19 @@ public class SubmitReviewUseCase {
 
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
+    private final ContentModerationService moderationService;
 
     public SubmitReviewUseCase(ReviewRepository reviewRepository,
-                               BookingRepository bookingRepository) {
+                               BookingRepository bookingRepository,
+                               ContentModerationService moderationService) {
         this.reviewRepository = reviewRepository;
         this.bookingRepository = bookingRepository;
+        this.moderationService = moderationService;
     }
 
     public Review execute(SubmitReviewCommand command) {
-        if (!bookingRepository.findById(command.bookingId()).isPresent()) {
-            throw new ResourceNotFoundException("Booking", command.bookingId().toString());
-        }
+        bookingRepository.findById(command.bookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", command.bookingId().toString()));
 
         if (reviewRepository.existsByBookingIdAndReviewerId(
                 command.bookingId(), command.reviewerId())) {
@@ -34,9 +38,16 @@ public class SubmitReviewUseCase {
                 command.reviewerId(),
                 command.rating(),
                 command.comment(),
-                command.isHostReview(),
+                command.isReviewForHost(),
                 command.isPublic()
         );
+
+        ModerationResult moderation = moderationService.analyze(command.comment());
+        if (moderation.passed()) {
+            review.approve();
+        } else {
+            review.flag(moderation.reason());
+        }
 
         return reviewRepository.save(review);
     }

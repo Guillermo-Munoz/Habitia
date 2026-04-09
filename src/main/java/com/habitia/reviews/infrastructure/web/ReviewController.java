@@ -2,8 +2,10 @@ package com.habitia.reviews.infrastructure.web;
 
 import com.habitia.reviews.application.GetReviewsByBookingUseCase;
 import com.habitia.reviews.application.GetReviewsByRoomUseCase;
+import com.habitia.reviews.application.RespondToReviewCommand;
+import com.habitia.reviews.application.RespondToReviewUseCase;
 import com.habitia.reviews.application.SubmitReviewCommand;
-import com.habitia.reviews.application.SubmitReviewsUseCase;
+import com.habitia.reviews.application.SubmitReviewUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,16 +18,19 @@ import java.util.UUID;
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
 
-    private final SubmitReviewsUseCase submitReviewUseCase;
+    private final SubmitReviewUseCase submitReviewUseCase;
     private final GetReviewsByBookingUseCase getReviewsByBookingUseCase;
     private final GetReviewsByRoomUseCase getReviewsByRoomUseCase;
+    private final RespondToReviewUseCase respondToReviewUseCase;
 
-    public ReviewController(SubmitReviewsUseCase submitReviewUseCase,
+    public ReviewController(SubmitReviewUseCase submitReviewUseCase,
                             GetReviewsByBookingUseCase getReviewsByBookingUseCase,
-                            GetReviewsByRoomUseCase getReviewsByRoomUseCase) {
+                            GetReviewsByRoomUseCase getReviewsByRoomUseCase,
+                            RespondToReviewUseCase respondToReviewUseCase) {
         this.submitReviewUseCase = submitReviewUseCase;
         this.getReviewsByBookingUseCase = getReviewsByBookingUseCase;
         this.getReviewsByRoomUseCase = getReviewsByRoomUseCase;
+        this.respondToReviewUseCase = respondToReviewUseCase;
     }
 
     @PostMapping
@@ -37,10 +42,23 @@ public class ReviewController {
                 UUID.fromString(auth.getName()),
                 request.rating(),
                 request.comment(),
-                request.isHostReview(),
+                request.isReviewForHost(),
                 request.isPublic()
         ));
         return ResponseEntity.status(HttpStatus.CREATED).body(ReviewResponse.from(review));
+    }
+
+    @PatchMapping("/{id}/respond")
+    public ResponseEntity<ReviewResponse> respond(
+            @PathVariable UUID id,
+            @RequestBody RespondToReviewRequest request,
+            Authentication auth) {
+        var review = respondToReviewUseCase.execute(new RespondToReviewCommand(
+                id,
+                UUID.fromString(auth.getName()),
+                request.response()
+        ));
+        return ResponseEntity.ok(ReviewResponse.from(review));
     }
 
     @GetMapping("/booking/{bookingId}")

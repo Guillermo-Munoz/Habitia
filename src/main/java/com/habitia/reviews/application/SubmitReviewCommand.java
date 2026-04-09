@@ -7,7 +7,7 @@ public record SubmitReviewCommand(
     UUID reviewerId,
     int rating,
     String comment,
-    boolean isHostReview,
+    boolean isReviewForHost,
     boolean isPublic
 ) {}
    
