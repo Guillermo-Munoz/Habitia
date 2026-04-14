@@ -3,11 +3,14 @@ package com.habitia.reviews.infrastructure.web;
 import com.habitia.reviews.application.ApproveReviewUseCase;
 import com.habitia.reviews.application.GetFlaggedReviewsUseCase;
 import com.habitia.reviews.application.RejectReviewUseCase;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,11 +31,9 @@ public class AdminReviewController {
     }
 
     @GetMapping("/flagged")
-    public ResponseEntity<List<ReviewResponse>> getFlagged() {
-        List<ReviewResponse> response = getFlaggedReviews.execute().stream()
-                .map(ReviewResponse::from)
-                .toList();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<ReviewResponse>> getFlagged(
+            @PageableDefault(size = 20, sort = "flaggedAt", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(getFlaggedReviews.execute(pageable).map(ReviewResponse::from));
     }
 
     @PatchMapping("/{id}/approve")

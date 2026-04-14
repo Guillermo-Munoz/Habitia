@@ -2,6 +2,9 @@ package com.habitia.reviews.infrastructure.persistence;
 
 import com.habitia.reviews.domain.Review;
 import com.habitia.reviews.domain.ReviewRepository;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -49,6 +52,16 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
         return jpaRepository.findFlaggedPendingReview().stream()
         .map(mapper::toDomain)
         .toList();
+    }
+    @Override
+    public Page<Review> findByRoomId(UUID roomId, Pageable pageable){
+        return jpaRepository.findByRoomId(roomId, pageable)
+                            .map(mapper::toDomain);
+    }
+    @Override
+    public Page<Review> findFlaggedPendingReview(Pageable pageable){
+        return jpaRepository.findFlaggedPendingReview(pageable)
+                            .map(mapper::toDomain);
     }
 
 }

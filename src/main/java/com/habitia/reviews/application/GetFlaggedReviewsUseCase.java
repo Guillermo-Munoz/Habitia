@@ -1,7 +1,7 @@
 package com.habitia.reviews.application;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.habitia.reviews.domain.Review;
@@ -16,7 +16,7 @@ public class GetFlaggedReviewsUseCase {
         this.reviewRepository = reviewRepository;
     }
 
-    public List<Review> execute() {
-        return reviewRepository.findFlaggedPendingReview();
+    public Page<Review> execute(Pageable pageable) {
+        return reviewRepository.findFlaggedPendingReview(pageable);
     }
 }
