@@ -1,8 +1,9 @@
 package com.habitia.reviews.application;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.habitia.reviews.domain.Review;
@@ -16,7 +17,7 @@ public class GetReviewsByRoomUseCase {
         this.reviewRepository = reviewRepository;
     }
 
-    public List<Review> execute(UUID roomId){
-        return reviewRepository.findByRoomId(roomId);
+    public Page<Review> execute(UUID roomId, Pageable pageable){
+        return reviewRepository.findByRoomId(roomId, pageable);
     }
 }

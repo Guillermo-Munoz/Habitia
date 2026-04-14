@@ -6,6 +6,10 @@ import com.habitia.reviews.application.RespondToReviewCommand;
 import com.habitia.reviews.application.RespondToReviewUseCase;
 import com.habitia.reviews.application.SubmitReviewCommand;
 import com.habitia.reviews.application.SubmitReviewUseCase;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -68,8 +72,9 @@ public class ReviewController {
     }
 
     @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<ReviewResponse>> getByRoom(@PathVariable UUID roomId) {
-        var reviews = getReviewsByRoomUseCase.execute(roomId);
-        return ResponseEntity.ok(reviews.stream().map(ReviewResponse::from).toList());
+    public ResponseEntity<Page<ReviewResponse>> getByRoom(
+            @PathVariable UUID roomId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(getReviewsByRoomUseCase.execute(roomId, pageable).map(ReviewResponse::from));
     }
 }
