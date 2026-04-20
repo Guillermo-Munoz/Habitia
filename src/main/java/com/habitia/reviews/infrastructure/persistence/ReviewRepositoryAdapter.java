@@ -2,9 +2,12 @@ package com.habitia.reviews.infrastructure.persistence;
 
 import com.habitia.reviews.domain.Review;
 import com.habitia.reviews.domain.ReviewRepository;
+import com.habitia.reviews.domain.RoomRatingStats;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -64,4 +67,11 @@ public class ReviewRepositoryAdapter implements ReviewRepository {
                             .map(mapper::toDomain);
     }
 
+   @Override
+    public RoomRatingStats getRatingStatsByRoomId(UUID roomId) {
+    Double average = jpaRepository.findAverageRatingByRoomId(roomId);
+    long total = jpaRepository.countApprovedByRoomId(roomId);
+    return new RoomRatingStats(average != null ? average : 0.0, total);
+}
+    
 }
