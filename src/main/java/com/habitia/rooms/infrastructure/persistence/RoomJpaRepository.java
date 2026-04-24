@@ -17,6 +17,9 @@ public interface RoomJpaRepository extends JpaRepository<RoomJpaEntity, UUID> {
     List<RoomJpaEntity> searchAvailable(@Param("city") String city,
                                         @Param("guests") int guests);
 
+    @Query("SELECT r FROM RoomJpaEntity r WHERE r.maxGuests >= :guests AND r.status = 'ACTIVE'")
+    List<RoomJpaEntity> searchAvailableAll(@Param("guests") int guests);
+
     @Query("SELECT DISTINCT r.city FROM RoomJpaEntity r WHERE r.status = 'ACTIVE' ORDER BY r.city")
     List<String> findAvailableCities();
 

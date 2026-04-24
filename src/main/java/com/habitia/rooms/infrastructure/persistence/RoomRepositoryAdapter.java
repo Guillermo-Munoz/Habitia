@@ -44,6 +44,12 @@ public class RoomRepositoryAdapter implements RoomRepository {
     }
 
     @Override
+    public List<Room> searchAvailableAll(int guests) {
+        return jpaRepository.searchAvailableAll(guests)
+                .stream().map(this::toDomain).toList();
+    }
+
+    @Override
     public List<String> findAvailableCities() {
         return jpaRepository.findAvailableCities();
     }

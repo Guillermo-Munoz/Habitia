@@ -60,7 +60,7 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<RoomResponse>> search(
-            @RequestParam String city,
+            @RequestParam(required = false) String city,
             @RequestParam(defaultValue = "1") int guests) {
         var rooms = searchRoomsUseCase.execute(city, guests);
         return ResponseEntity.ok(rooms.stream().map(RoomResponse::from).toList());
