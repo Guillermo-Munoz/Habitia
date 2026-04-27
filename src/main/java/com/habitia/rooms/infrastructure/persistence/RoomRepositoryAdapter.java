@@ -1,5 +1,6 @@
 package com.habitia.rooms.infrastructure.persistence;
 
+import com.habitia.rooms.domain.Amenity;
 import com.habitia.rooms.domain.Room;
 import com.habitia.rooms.domain.RoomRepository;
 import com.habitia.rooms.domain.RoomStatus;
@@ -8,6 +9,7 @@ import com.habitia.shared.domain.valueobject.UserId;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,6 +76,7 @@ public class RoomRepositoryAdapter implements RoomRepository {
         e.setPriceAmount(room.getPrice().amount());
         e.setPriceCurrency(room.getPrice().currency());
         e.setMaxGuests(room.getMaxGuests());
+        e.setAmenities(room.getAmenities());
         e.setStatus(room.getStatus().name());
         e.setCreatedAt(room.getCreatedAt());
         e.setImageUrls(room.getImageUrls());
@@ -93,6 +96,9 @@ public class RoomRepositoryAdapter implements RoomRepository {
                 e.getLongitude(),
                 Money.of(e.getPriceAmount(), e.getPriceCurrency()),
                 e.getMaxGuests(),
+                e.getAmenities() != null && !e.getAmenities().isEmpty()
+                        ? EnumSet.copyOf(e.getAmenities())
+                        : EnumSet.noneOf(Amenity.class),
                 RoomStatus.valueOf(e.getStatus()),
                 e.getCreatedAt(),
                 e.getImageUrls() != null ? e.getImageUrls() : List.of()

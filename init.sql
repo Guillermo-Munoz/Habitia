@@ -102,3 +102,8 @@ CREATE TABLE IF NOT EXISTS notifications (
     is_read       BOOLEAN NOT NULL DEFAULT false,
     created_at    TIMESTAMPTZ NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS room_amenities (
+    room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
+    amenity VARCHAR(50) NOT NULL
+);

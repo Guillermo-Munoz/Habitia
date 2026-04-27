@@ -6,7 +6,9 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -24,6 +26,7 @@ public class Room {
     private Double longitude;
     private Money price;
     private int maxGuests;
+    private Set<Amenity> amenities;
     private RoomStatus status;
     private final LocalDateTime createdAt;
     private final List<String> imageUrls;
@@ -32,7 +35,7 @@ public class Room {
     public Room(UserId hostId, String title, String description,
                 String street, String city, String country,
                 Double latitude, Double longitude,
-                Money price, int maxGuests) {
+                Money price, int maxGuests, Set<Amenity> amenities) {
         this.id = UUID.randomUUID();
         this.hostId = hostId;
         this.title = title;
@@ -44,6 +47,7 @@ public class Room {
         this.longitude = longitude;
         this.price = price;
         this.maxGuests = maxGuests;
+        this.amenities = amenities != null ? EnumSet.copyOf(amenities) : EnumSet.noneOf(Amenity.class);
         this.status = RoomStatus.ACTIVE;
         this.createdAt = LocalDateTime.now();
         this.imageUrls = new ArrayList<>();
@@ -53,7 +57,7 @@ public class Room {
     public Room(UUID id, UserId hostId, String title, String description,
                 String street, String city, String country,
                 Double latitude, Double longitude,
-                Money price, int maxGuests,
+                Money price, int maxGuests, Set<Amenity> amenities,
                 RoomStatus status, LocalDateTime createdAt, List<String> imageUrls) {
         this.id = id;
         this.hostId = hostId;
@@ -66,10 +70,12 @@ public class Room {
         this.longitude = longitude;
         this.price = price;
         this.maxGuests = maxGuests;
+        this.amenities = amenities != null && !amenities.isEmpty()
+                ? EnumSet.copyOf(amenities)
+                : EnumSet.noneOf(Amenity.class);
         this.status = status;
         this.createdAt = createdAt;
         this.imageUrls = imageUrls != null ? new ArrayList<>(imageUrls) : new ArrayList<>();
-
     }
 
     public void update(String title, String description, String street,

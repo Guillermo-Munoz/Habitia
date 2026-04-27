@@ -1,5 +1,6 @@
 package com.habitia.rooms.infrastructure.persistence;
 
+import com.habitia.rooms.domain.Amenity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -53,6 +55,12 @@ public class RoomJpaEntity {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "room_amenities", joinColumns = @JoinColumn(name = "room_id"))
+    @Column(name = "amenity")
+    private Set<Amenity> amenities;
 
     @ElementCollection
     @CollectionTable(name = "room_images", joinColumns = @JoinColumn(name = "room_id"))
