@@ -1,9 +1,11 @@
 package com.habitia.rooms.infrastructure.web;
 
+import com.habitia.rooms.domain.Amenity;
 import com.habitia.rooms.domain.Room;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public record RoomResponse(
@@ -18,6 +20,7 @@ public record RoomResponse(
         BigDecimal priceAmount,
         String priceCurrency,
         int maxGuests,
+        Set<Amenity> amenities,
         String status,
         List<String> imageUrls
 ) {
@@ -34,6 +37,7 @@ public record RoomResponse(
                 room.getPrice().amount(),
                 room.getPrice().currency(),
                 room.getMaxGuests(),
+                room.getAmenities(),
                 room.getStatus().name(),
                 room.getImageUrls()
         );

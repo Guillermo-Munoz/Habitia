@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +25,7 @@ class RoomTest {
     @DisplayName("Crear habitación nueva debería asignar estado ACTIVE por defecto")
     void crearRoom_deberiaAsignarEstadoActivePorDefecto() {
         Room room = new Room(hostId, "Piso céntrico", "Descripción", "Calle Mayor 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         assertEquals(RoomStatus.ACTIVE, room.getStatus());
         assertTrue(room.isActive());
@@ -34,7 +35,7 @@ class RoomTest {
     @DisplayName("Crear habitación nueva debería generar un id no nulo")
     void crearRoom_deberiaGenerarIdNoNulo() {
         Room room = new Room(hostId, "Piso céntrico", "Descripción", "Calle Mayor 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         assertNotNull(room.getId());
     }
@@ -43,7 +44,7 @@ class RoomTest {
     @DisplayName("Crear habitación nueva debería asignar createdAt no nulo")
     void crearRoom_deberiaAsignarCreatedAtNoNulo() {
         Room room = new Room(hostId, "Piso céntrico", "Descripción", "Calle Mayor 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         assertNotNull(room.getCreatedAt());
     }
@@ -52,7 +53,7 @@ class RoomTest {
     @DisplayName("Crear habitación nueva debería guardar todos los campos correctamente")
     void crearRoom_deberiaGuardarTodosLosCampos() {
         Room room = new Room(hostId, "Piso céntrico", "Bonito piso", "Calle Mayor 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 3);
+                "Madrid", "España", 40.4168, -3.7038, precio, 3, Set.of(Amenity.WIFI, Amenity.HEATING));
 
         assertEquals(hostId, room.getHostId());
         assertEquals("Piso céntrico", room.getTitle());
@@ -64,6 +65,8 @@ class RoomTest {
         assertEquals(-3.7038, room.getLongitude());
         assertEquals(precio, room.getPrice());
         assertEquals(3, room.getMaxGuests());
+        assertTrue(room.getAmenities().contains(Amenity.WIFI));
+        assertTrue(room.getAmenities().contains(Amenity.HEATING));
     }
 
     // -------------------------------------------------------------------------
@@ -77,7 +80,7 @@ class RoomTest {
         LocalDateTime createdAt = LocalDateTime.now();
 
         Room room = new Room(id, hostId, "Piso céntrico", "Descripción", "Calle Mayor 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2,
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null,
                 RoomStatus.INACTIVE, createdAt, null);
 
         assertEquals(id, room.getId());
@@ -103,7 +106,7 @@ class RoomTest {
     @DisplayName("Actualizar habitación debería modificar los campos editables")
     void actualizar_deberiaActualizarLosCampos() {
         Room room = new Room(hostId, "Título original", "Desc original", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
         Money nuevoPrecio = Money.euro(new BigDecimal("100.00"));
 
         room.update("Nuevo título", "Nueva descripción", "Calle Nueva 5",
@@ -122,7 +125,7 @@ class RoomTest {
     @DisplayName("Actualizar habitación no debería cambiar el estado ni el id")
     void actualizar_noDeberiaModificarEstadoNiId() {
         Room room = new Room(hostId, "Título", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
         UUID idOriginal = room.getId();
 
         room.update("Nuevo título", "Nueva desc", "Calle 2",
@@ -140,7 +143,7 @@ class RoomTest {
     @DisplayName("Desactivar habitación debería poner el estado a INACTIVE")
     void desactivar_deberiaCambiarEstadoAInactive() {
         Room room = new Room(hostId, "Piso", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         room.deactivate();
 
@@ -152,7 +155,7 @@ class RoomTest {
     @DisplayName("Eliminar habitación debería poner el estado a DELETED")
     void eliminar_deberiaCambiarEstadoADeleted() {
         Room room = new Room(hostId, "Piso", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         room.delete();
 
@@ -164,7 +167,7 @@ class RoomTest {
     @DisplayName("isActive devuelve true solo cuando el estado es ACTIVE")
     void isActive_conEstadoActive_deberiaRetornarTrue() {
         Room room = new Room(hostId, "Piso", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2);
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null);
 
         assertTrue(room.isActive());
     }
@@ -173,7 +176,7 @@ class RoomTest {
     @DisplayName("isActive devuelve false cuando el estado es INACTIVE")
     void isActive_conEstadoInactive_deberiaRetornarFalse() {
         Room room = new Room(UUID.randomUUID(), hostId, "Piso", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2,
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null,
                 RoomStatus.INACTIVE, LocalDateTime.now(), null);
 
         assertFalse(room.isActive());
@@ -183,7 +186,7 @@ class RoomTest {
     @DisplayName("isActive devuelve false cuando el estado es DELETED")
     void isActive_conEstadoDeleted_deberiaRetornarFalse() {
         Room room = new Room(UUID.randomUUID(), hostId, "Piso", "Desc", "Calle 1",
-                "Madrid", "España", 40.4168, -3.7038, precio, 2,
+                "Madrid", "España", 40.4168, -3.7038, precio, 2, null,
                 RoomStatus.DELETED, LocalDateTime.now(), null);
 
         assertFalse(room.isActive());

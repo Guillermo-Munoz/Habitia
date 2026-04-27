@@ -53,7 +53,8 @@ public class RoomController {
                 request.longitude(),
                 request.priceAmount(),
                 request.priceCurrency(),
-                request.maxGuests()
+                request.maxGuests(),
+                request.amenities()
         ));
         return ResponseEntity.status(HttpStatus.CREATED).body(RoomResponse.from(room));
     }
@@ -90,7 +91,7 @@ public class RoomController {
     @PostMapping("/{id}/images")
     public ResponseEntity<RoomResponse> uploadImage(
             @PathVariable UUID id,
-            @RequestParam("file") MultipartFile file,
+            @RequestParam MultipartFile file,
             Authentication auth) {
         var room = uploadRoomImageUseCase.execute(id, auth.getName(), file);
         return ResponseEntity.ok(RoomResponse.from(room));

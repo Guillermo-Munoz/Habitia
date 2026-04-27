@@ -26,7 +26,8 @@ public class PublishRoomUseCase {
                 command.latitude(),
                 command.longitude(),
                 Money.of(command.priceAmount(), command.priceCurrency()),
-                command.maxGuests()
+                command.maxGuests(),
+                command.amenities()
         );
         return roomRepository.save(room);
     }

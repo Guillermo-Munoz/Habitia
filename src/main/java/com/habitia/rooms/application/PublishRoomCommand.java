@@ -1,6 +1,9 @@
 package com.habitia.rooms.application;
 
+import com.habitia.rooms.domain.Amenity;
+
 import java.math.BigDecimal;
+import java.util.Set;
 
 public record PublishRoomCommand(
         String hostId,
@@ -13,5 +16,6 @@ public record PublishRoomCommand(
         Double longitude,
         BigDecimal priceAmount,
         String priceCurrency,
-        int maxGuests
+        int maxGuests,
+        Set<Amenity> amenities
 ) {}
