@@ -3,6 +3,7 @@ package com.habitia.shared.domain.moderation;
 import com.habitia.moderation.domain.BannedWordRepository;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,8 +38,10 @@ public class ContentModerationService {
     private static final int       MIN_LETTERS_FOR_UPPERCASE   = 10;
     private static final double    UPPERCASE_THRESHOLD         = 0.7;
 
-    // Precompilado una sola vez — compilar Pattern en cada llamada es costoso
-    private static final Pattern SPECIAL_CHAR_PATTERN = Pattern.compile("[!?]{5,}");
+    private static final Pattern SPECIAL_CHAR_PATTERN   = Pattern.compile("[!?]{5,}");
+    private static final Pattern URL_PATTERN            = Pattern.compile("https?://\\S+|www\\.\\S+\\.\\S+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMAIL_PATTERN          = Pattern.compile("[\\w.+\\-]+@[\\w\\-]+\\.[\\w.]+");
+    private static final Pattern PHONE_PATTERN          = Pattern.compile("(\\+\\d{1,3}[\\s\\-]?)?(\\d[\\s.\\-]?){7,}\\d");
 
     /**
      * Patrones que detectan evasiones comunes: s3x, p*rn, f.u.c.k, etc.
@@ -83,6 +86,9 @@ public class ContentModerationService {
 
         if (text.length() > MAX_TEXT_LENGTH)
             return ModerationResult.rejected("Text exceeds maximum allowed length");
+
+        if (containsSensitiveContact(text))
+            return ModerationResult.rejected("Contact information is not allowed in reviews");
 
         String normalized = normalize(text);
 
@@ -129,6 +135,13 @@ public class ContentModerationService {
         return SPECIAL_CHAR_PATTERN.matcher(text).find();
     }
 
+    /** Detecta URLs, emails y teléfonos — se aplica sobre el texto sin normalizar. */
+    private boolean containsSensitiveContact(String text) {
+        return URL_PATTERN.matcher(text).find()
+                || EMAIL_PATTERN.matcher(text).find()
+                || PHONE_PATTERN.matcher(text).find();
+    }
+
     // ==============================
     // CACHÉ
     // ==============================
@@ -151,7 +164,7 @@ public class ContentModerationService {
         if (!isCacheExpired()) return;
         cachedBannedWords = bannedWordRepository.findAll()
                 .stream()
-                .map(w -> w.getWord().toLowerCase())
+                .map(w -> normalize(w.getWord()))
                 .toList();
         lastCacheUpdate = LocalDateTime.now();
     }
@@ -165,14 +178,16 @@ public class ContentModerationService {
      * Sustituye homoglifos comunes antes de pasar a minúsculas,
      * lo que mejora la detección sin afectar a los patrones regex.
      */
-    private String normalize(String text) {
-        return text
+    private static String normalize(String text) {
+        String homoglyphs = text
                 .replace('@', 'a')
                 .replace('3', 'e')
                 .replace('1', 'i')
                 .replace('0', 'o')
                 .replace('$', 's')
-                .replace('€', 'e')
+                .replace('€', 'e');
+        return Normalizer.normalize(homoglyphs, Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
                 .toLowerCase()
                 .trim();
     }

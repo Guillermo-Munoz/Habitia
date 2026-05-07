@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 CREATE TABLE IF NOT EXISTS banned_words (
     id          UUID PRIMARY KEY,
     word        VARCHAR(100) NOT NULL UNIQUE,
+    sureness    INTEGER NOT NULL DEFAULT 2,
     created_at  TIMESTAMPTZ NOT NULL
 );
 
@@ -107,3 +108,10 @@ CREATE TABLE IF NOT EXISTS room_amenities (
     room_id UUID NOT NULL REFERENCES rooms(id) ON DELETE CASCADE,
     amenity VARCHAR(50) NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_bookings_room_id    ON bookings(room_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_guest_id   ON bookings(guest_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_status     ON bookings(status);
+CREATE INDEX IF NOT EXISTS idx_reviews_booking_id  ON reviews(booking_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_approved    ON reviews(is_approved, is_deleted);
+CREATE INDEX IF NOT EXISTS idx_reviews_flagged     ON reviews(is_flagged, is_approved, is_deleted);

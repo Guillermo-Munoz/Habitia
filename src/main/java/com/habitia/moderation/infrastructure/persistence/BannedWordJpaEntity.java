@@ -25,6 +25,9 @@ public class BannedWordJpaEntity {
     @Column(nullable = false, unique = true, length = 100)
     private String word;
 
+    @Column(nullable = false)
+    private int sureness;
+
     @Column
     private LocalDateTime createdAt;
 

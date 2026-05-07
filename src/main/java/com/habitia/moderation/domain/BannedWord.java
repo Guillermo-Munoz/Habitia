@@ -6,29 +6,27 @@ import java.util.UUID;
 public class BannedWord {
     private final UUID id;
     private final String word;
+    private final int sureness;
     private final LocalDateTime createdAt;
 
-    /** Cear una nueva palabra prohibida. */
-    public BannedWord(String word){
-        if(word == null || word.isBlank()) throw new IllegalArgumentException("Word cannot be null or blank");
+    public BannedWord(String word, int sureness) {
+        if (word == null || word.isBlank()) throw new IllegalArgumentException("Word cannot be null or blank");
+        if (sureness < 0 || sureness > 2) throw new IllegalArgumentException("Sureness must be 0, 1 or 2");
         this.id = UUID.randomUUID();
         this.word = word.toLowerCase();
+        this.sureness = sureness;
         this.createdAt = LocalDateTime.now();
     }
-    /** Reconstruye desde la base de datos palabras prohibidas. */
-    public BannedWord(UUID id, String word, LocalDateTime createdAt){
+
+    public BannedWord(UUID id, String word, int sureness, LocalDateTime createdAt) {
         this.id = id;
         this.word = word.toLowerCase();
+        this.sureness = sureness;
         this.createdAt = createdAt;
     }
 
-    public UUID getId() {
-        return id;
-    }
-    public String getWord() {
-        return word;
-    }  
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public UUID getId() { return id; }
+    public String getWord() { return word; }
+    public int getSureness() { return sureness; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }

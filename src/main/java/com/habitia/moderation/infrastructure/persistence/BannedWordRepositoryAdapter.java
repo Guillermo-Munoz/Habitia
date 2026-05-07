@@ -40,11 +40,12 @@ public class BannedWordRepositoryAdapter implements BannedWordRepository {
         BannedWordJpaEntity e = new BannedWordJpaEntity();
         e.setId(word.getId());
         e.setWord(word.getWord());
+        e.setSureness(word.getSureness());
         e.setCreatedAt(word.getCreatedAt());
         return e;
     }
 
     private BannedWord toDomain(BannedWordJpaEntity e) {
-        return new BannedWord(e.getId(), e.getWord(), e.getCreatedAt());
+        return new BannedWord(e.getId(), e.getWord(), e.getSureness(), e.getCreatedAt());
     }
 }

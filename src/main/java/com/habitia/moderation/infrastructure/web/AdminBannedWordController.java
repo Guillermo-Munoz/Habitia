@@ -14,32 +14,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.habitia.moderation.application.AddBannedWordUseCase;
+import com.habitia.moderation.application.AddBannedWordsBulkUseCase;
 import com.habitia.moderation.application.DeleteBannedWordUseCase;
 import com.habitia.moderation.application.GetAllBannedWordsUseCase;
 import com.habitia.moderation.domain.BannedWord;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin/banned-words")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminBannedWordController {
     private final AddBannedWordUseCase addBannedWord;
+    private final AddBannedWordsBulkUseCase addBannedWordsBulk;
     private final DeleteBannedWordUseCase deleteBannedWord;
     private final GetAllBannedWordsUseCase getAllBannedWords;
-    
+
     public AdminBannedWordController(AddBannedWordUseCase addBannedWord,
+                                     AddBannedWordsBulkUseCase addBannedWordsBulk,
                                      DeleteBannedWordUseCase deleteBannedWord,
                                      GetAllBannedWordsUseCase getAllBannedWords){
             this.addBannedWord = addBannedWord;
+            this.addBannedWordsBulk = addBannedWordsBulk;
             this.deleteBannedWord = deleteBannedWord;
-            this.getAllBannedWords = getAllBannedWords;                            
+            this.getAllBannedWords = getAllBannedWords;
     }
     @GetMapping
     public ResponseEntity<List<BannedWord>> getAll(){
         return ResponseEntity.ok(getAllBannedWords.execute());
     }
     @PostMapping
-    public ResponseEntity<BannedWord> add(@RequestParam String word){
-        return ResponseEntity.status(201).body(addBannedWord.execute(word));
+    public ResponseEntity<BannedWord> add(@RequestParam String word,
+                                          @RequestParam(defaultValue = "2") int sureness) {
+        return ResponseEntity.status(201).body(addBannedWord.execute(word, sureness));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<Map<String, Integer>> addBulk(
+            @org.springframework.web.bind.annotation.RequestBody Map<String, Integer> words) {
+        int added = addBannedWordsBulk.execute(words);
+        return ResponseEntity.status(201).body(Map.of("added", added));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){

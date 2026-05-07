@@ -2,6 +2,7 @@ package com.habitia.reviews.application;
 
 import com.habitia.bookings.domain.Booking;
 import com.habitia.bookings.domain.BookingRepository;
+import com.habitia.bookings.domain.BookingStatus;
 import com.habitia.notifications.application.CreateNotificationUseCase;
 import com.habitia.notifications.domain.NotificationType;
 import com.habitia.reviews.domain.Review;
@@ -36,9 +37,17 @@ public class SubmitReviewUseCase {
         Booking booking = bookingRepository.findById(command.bookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", command.bookingId().toString()));
 
+        if (booking.getStatus() != BookingStatus.COMPLETED) {
+            throw new BusinessRuleException("Reviews can only be submitted for completed stays");
+        }
+
         if (reviewRepository.existsByBookingIdAndReviewerId(
                 command.bookingId(), command.reviewerId())) {
             throw new BusinessRuleException("Reviewer has already submitted a review for this booking");
+        }
+
+        if (command.rating() <= 2 && (command.comment() == null || command.comment().isBlank())) {
+            throw new BusinessRuleException("A comment is required when rating is 2 stars or below");
         }
 
         Review review = new Review(
