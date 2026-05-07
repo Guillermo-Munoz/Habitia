@@ -19,15 +19,16 @@ public class RegisterUserUseCase {
     }
 
     public User execute(RegisterUserCommand command) {
-        if (userRepository.existsByEmail(command.email())) {
-            throw new BusinessRuleException("Email already regidtered: " + command.email());
+        String email = command.email().trim().toLowerCase();
+        if (userRepository.existsByEmail(email)) {
+            throw new BusinessRuleException("Email already registered: " + email);
         }
 
         String hashedPassword = passwordEncoder.encode(command.password());
 
         User user = new User(
                 command.fullName(),
-                command.email(),
+                email,
                 hashedPassword,
                 UserRole.USER
         );

@@ -5,14 +5,27 @@ services:
     image: postgres:16
     container_name: habitia-postgres
     environment:
-      POSTGRES_DB: habitia
-      POSTGRES_USER: habitia
-      POSTGRES_PASSWORD: habitia
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - habitia-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: habitia-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
     networks:
       - habitia-net
 
@@ -22,13 +35,13 @@ services:
       dockerfile: Dockerfile
     container_name: habitia-app
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/habitia
-      SPRING_DATASOURCE_USERNAME: habitia
-      SPRING_DATASOURCE_PASSWORD: habitia
-      APP_JWT_SECRET: "SRy27MmribaLkBtOJScXNSe3UoERIo6ji4kbpfLjWbM1qbu4LqXCbakpcjXFuu43QLhRXPgF5FP3tjrNlyNE3G"
-      APP_JWT_EXPIRATION_MS: 86400000
-      APP_STORAGE_UPLOAD_DIR: /app/uploads
-      APP_STORAGE_BASE_URL: http://localhost:8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      APP_JWT_SECRET: ${APP_JWT_SECRET}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS}
+      APP_STORAGE_UPLOAD_DIR: ${APP_STORAGE_UPLOAD_DIR}
+      APP_STORAGE_BASE_URL: ${APP_STORAGE_BASE_URL}
     ports:
       - "8080:8080"
     volumes:

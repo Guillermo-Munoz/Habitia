@@ -27,24 +27,18 @@ public class UserController {
     }
 
     @PostMapping("/auth/register")
-    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
-        var user = registerUserUseCase.execute(
+    public ResponseEntity<TokenResponse> register(@Valid @RequestBody RegisterRequest request) {
+        registerUserUseCase.execute(
                 new RegisterUserCommand(
                         request.fullName(),
                         request.email(),
                         request.password()
                 )
         );
+        var result = authenticateUserUseCase.execute(request.email(), request.password());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new UserResponse(
-                        user.getId().toString(),
-                        user.getFullName(),
-                        user.getEmail(),
-                        user.getRole().name(),
-                        user.getBio(),
-                        user.getAvatarUrl()
-                ));
+                .body(new TokenResponse(result.token(), result.userId(), result.role()));
     }
 
     @PostMapping("/auth/login")

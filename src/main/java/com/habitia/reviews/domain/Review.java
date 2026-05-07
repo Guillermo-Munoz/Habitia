@@ -139,7 +139,6 @@ public class Review {
      */
     public void respondToReview(String response, UUID hostId) {
         if (hostId == null) throw new IllegalArgumentException("Host ID cannot be null");
-        if (!this.isReviewForHost) throw new IllegalStateException("Only reviews directed to the host can be responded to");
         if (this.isDeleted) throw new IllegalStateException("Cannot respond to a deleted review");
         if (this.isResponded) throw new IllegalStateException("Review has already been responded to");
         if (response == null || response.trim().isEmpty()) throw new IllegalArgumentException("Response cannot be empty");
