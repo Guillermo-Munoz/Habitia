@@ -1,8 +1,5 @@
 package com.habitia.moderation.application;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 import com.habitia.moderation.domain.BannedWord;
@@ -16,10 +13,10 @@ public class AddBannedWordUseCase {
     public AddBannedWordUseCase(BannedWordRepository bannedWordRepository) {
         this.bannedWordRepository = bannedWordRepository;
     }
-    public BannedWord execute(String word){
+    public BannedWord execute(String word, int sureness){
         if(bannedWordRepository.existsByWord(word)){
             throw new BusinessRuleException("word '" + word + "' is already banned");
         }
-        return bannedWordRepository.save(new BannedWord(UUID.randomUUID(),word, LocalDateTime.now()));
+        return bannedWordRepository.save(new BannedWord(word, sureness));
     }
 }

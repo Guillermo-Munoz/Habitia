@@ -15,12 +15,12 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, UUID
 
     @Query("SELECT r FROM ReviewJpaEntity r " +
            "JOIN BookingJpaEntity b ON r.bookingId = b.id " +
-           "WHERE b.roomId = :roomId")
+           "WHERE b.roomId = :roomId AND r.isApproved = true AND r.isDeleted = false")
     List<ReviewJpaEntity> findByRoomId(@Param("roomId") UUID roomId);
 
     @Query("SELECT r FROM ReviewJpaEntity r " +
            "JOIN BookingJpaEntity b ON r.bookingId = b.id " +
-           "WHERE b.roomId = :roomId")
+           "WHERE b.roomId = :roomId AND r.isApproved = true AND r.isDeleted = false")
     Page<ReviewJpaEntity> findByRoomId(@Param("roomId") UUID roomId, Pageable pageable);
 
     boolean existsByBookingIdAndReviewerId(UUID bookingId, UUID reviewerId);

@@ -80,7 +80,7 @@ class ContentModerationServiceTest {
         @DisplayName("should reject when text contains a banned word")
         void shouldReject_whenTextContainsBannedWord() {
             when(bannedWordRepository.findAll()).thenReturn(List.of(
-                    new BannedWord(UUID.randomUUID(), "badword", LocalDateTime.now())
+                    new BannedWord(UUID.randomUUID(), "badword", 2, LocalDateTime.now())
             ));
             moderationService = new ContentModerationService(bannedWordRepository);
 
@@ -155,7 +155,7 @@ class ContentModerationServiceTest {
         @DisplayName("should reject on first failing rule even if others would pass")
         void shouldReject_onFirstFailingRule() {
             when(bannedWordRepository.findAll()).thenReturn(List.of(
-                    new BannedWord(UUID.randomUUID(), "clean", LocalDateTime.now())
+                    new BannedWord(UUID.randomUUID(), "clean", 2, LocalDateTime.now())
             ));
             moderationService = new ContentModerationService(bannedWordRepository);
 
