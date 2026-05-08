@@ -9,6 +9,8 @@ import java.util.UUID;
 public record BookingResponse(
         UUID id,
         UUID roomId,
+        String roomTitle,
+        String roomImageUrl,
         String guestId,
         String hostId,
         LocalDate checkIn,
@@ -22,6 +24,25 @@ public record BookingResponse(
         return new BookingResponse(
                 b.getId(),
                 b.getRoomId(),
+                null,
+                null,
+                b.getGuestId().toString(),
+                b.getHostId().toString(),
+                b.getDateRange().checkIn(),
+                b.getDateRange().checkOut(),
+                b.getGuests(),
+                b.getStatus().name(),
+                b.getMessage(),
+                b.getCreatedAt()
+        );
+    }
+
+    public static BookingResponse from(Booking b, String roomTitle, String roomImageUrl) {
+        return new BookingResponse(
+                b.getId(),
+                b.getRoomId(),
+                roomTitle,
+                roomImageUrl,
                 b.getGuestId().toString(),
                 b.getHostId().toString(),
                 b.getDateRange().checkIn(),

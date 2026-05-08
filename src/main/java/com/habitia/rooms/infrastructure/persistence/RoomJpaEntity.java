@@ -62,7 +62,7 @@ public class RoomJpaEntity {
     @Column(name = "amenity")
     private Set<Amenity> amenities;
 
-    @ElementCollection
+    @ElementCollection(fetch = jakarta.persistence.FetchType.EAGER)
     @CollectionTable(name = "room_images", joinColumns = @JoinColumn(name = "room_id"))
     @Column(name = "image_url")
     private List<String> imageUrls;
