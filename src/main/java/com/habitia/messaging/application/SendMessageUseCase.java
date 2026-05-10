@@ -10,6 +10,7 @@ import com.habitia.notifications.application.CreateNotificationUseCase;
 import com.habitia.notifications.domain.NotificationType;
 import com.habitia.shared.domain.exception.BusinessRuleException;
 import com.habitia.shared.domain.exception.ResourceNotFoundException;
+import com.habitia.shared.domain.moderation.ContentModerationService;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -21,15 +22,18 @@ public class SendMessageUseCase {
     private final ConversationRepository conversationRepository;
     private final BookingRepository bookingRepository;
     private final CreateNotificationUseCase createNotification;
+    private final ContentModerationService moderationService;
 
     public SendMessageUseCase(MessageRepository messageRepository,
                               ConversationRepository conversationRepository,
                               BookingRepository bookingRepository,
-                              CreateNotificationUseCase createNotification) {
+                              CreateNotificationUseCase createNotification,
+                              ContentModerationService moderationService) {
         this.messageRepository = messageRepository;
         this.conversationRepository = conversationRepository;
         this.bookingRepository = bookingRepository;
         this.createNotification = createNotification;
+        this.moderationService = moderationService;
     }
 
     public Message execute(UUID bookingId, UUID senderId, String content) {
@@ -43,6 +47,11 @@ public class SendMessageUseCase {
             throw new BusinessRuleException("Only the guest or host of this booking can send messages");
         }
 
+        var moderation = moderationService.analyze(content);
+        if (!moderation.passed()) {
+            throw new BusinessRuleException("Message blocked: " + moderation.reason());
+        }
+
         Conversation conversation = conversationRepository.findByBookingId(bookingId)
                 .orElseGet(() -> conversationRepository.save(
                         new Conversation(bookingId, guestId, hostId)));
@@ -52,7 +61,7 @@ public class SendMessageUseCase {
         // Notificar al destinatario (el que no es el remitente)
         UUID recipientId = senderId.equals(guestId) ? hostId : guestId;
         createNotification.execute(recipientId, NotificationType.MESSAGE_RECEIVED,
-                "You have a new message", saved.getId());
+                "You have a new message", bookingId);
 
         return saved;
     }
