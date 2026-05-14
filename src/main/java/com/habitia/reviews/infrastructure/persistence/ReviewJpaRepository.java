@@ -28,6 +28,9 @@ public interface ReviewJpaRepository extends JpaRepository<ReviewJpaEntity, UUID
     @Query("SELECT r FROM ReviewJpaEntity r WHERE r.isFlagged = true AND r.isApproved = false AND r.isDeleted = false")
     List<ReviewJpaEntity> findFlaggedPendingReview();
 
+    @Query("SELECT COUNT(r) FROM ReviewJpaEntity r WHERE r.isFlagged = true AND r.isApproved = false AND r.isDeleted = false")
+    long countFlaggedPendingReview();
+
     @Query("SELECT r FROM ReviewJpaEntity r WHERE r.isFlagged = true AND r.isApproved = false AND r.isDeleted = false")
     Page<ReviewJpaEntity> findFlaggedPendingReview(Pageable pageable);
     
