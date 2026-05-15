@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.habitia.moderation.domain.BannedWord;
@@ -31,6 +33,11 @@ public class BannedWordRepositoryAdapter implements BannedWordRepository {
     @Override
     public List<BannedWord> findAll() {
         return jpaRepository.findAll().stream().map(this::toDomain).toList();
+    }
+
+    @Override
+    public Page<BannedWord> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable).map(this::toDomain);
     }
     @Override 
     public boolean existsByWord(String words){
