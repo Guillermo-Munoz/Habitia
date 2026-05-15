@@ -1,8 +1,11 @@
 package com.habitia.moderation.infrastructure.web;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +22,6 @@ import com.habitia.moderation.application.DeleteBannedWordUseCase;
 import com.habitia.moderation.application.GetAllBannedWordsUseCase;
 import com.habitia.moderation.domain.BannedWord;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,8 +43,9 @@ public class AdminBannedWordController {
             this.getAllBannedWords = getAllBannedWords;
     }
     @GetMapping
-    public ResponseEntity<List<BannedWord>> getAll(){
-        return ResponseEntity.ok(getAllBannedWords.execute());
+    public ResponseEntity<Page<BannedWord>> getAll(
+            @PageableDefault(size = 20, sort = "word", direction = Sort.Direction.ASC) Pageable pageable) {
+        return ResponseEntity.ok(getAllBannedWords.execute(pageable));
     }
     @PostMapping
     public ResponseEntity<BannedWord> add(@RequestParam String word,
