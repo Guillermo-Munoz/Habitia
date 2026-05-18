@@ -28,6 +28,7 @@ public class RoomController {
     private final GetAvailableRoomsByDatesUseCase getAvailableRoomsByDatesUseCase;
     private final GetRoomRatingUseCase getRoomRatingUseCase;
     private final GetBookedDatesUseCase getBookedDatesUseCase;
+    private final DeleteRoomUseCase deleteRoomUseCase;
 
     public RoomController(PublishRoomUseCase publishRoomUseCase,
                           SearchRoomsUseCase searchRoomsUseCase,
@@ -36,7 +37,8 @@ public class RoomController {
                           GetAvailableCitiesUseCase getAvailableCitiesUseCase,
                           GetAvailableRoomsByDatesUseCase getAvailableRoomsByDatesUseCase,
                           GetRoomRatingUseCase getRoomRatingUseCase,
-                          GetBookedDatesUseCase getBookedDatesUseCase) {
+                          GetBookedDatesUseCase getBookedDatesUseCase,
+                          DeleteRoomUseCase deleteRoomUseCase) {
         this.publishRoomUseCase = publishRoomUseCase;
         this.searchRoomsUseCase = searchRoomsUseCase;
         this.getRoomUseCase = getRoomUseCase;
@@ -45,6 +47,7 @@ public class RoomController {
         this.getAvailableRoomsByDatesUseCase = getAvailableRoomsByDatesUseCase;
         this.getRoomRatingUseCase = getRoomRatingUseCase;
         this.getBookedDatesUseCase = getBookedDatesUseCase;
+        this.deleteRoomUseCase = deleteRoomUseCase;
     }
 
     @PostMapping
@@ -120,5 +123,11 @@ public class RoomController {
             Authentication auth) {
         var room = uploadRoomImageUseCase.execute(id, auth.getName(), file);
         return ResponseEntity.ok(RoomResponse.from(room, getRoomRatingUseCase.execute(id)));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id, Authentication auth) {
+        deleteRoomUseCase.execute(id, auth.getName());
+        return ResponseEntity.noContent().build();
     }
 }
