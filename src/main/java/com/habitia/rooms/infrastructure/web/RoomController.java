@@ -29,6 +29,7 @@ public class RoomController {
     private final GetRoomRatingUseCase getRoomRatingUseCase;
     private final GetBookedDatesUseCase getBookedDatesUseCase;
     private final DeleteRoomUseCase deleteRoomUseCase;
+    private final UpdateRoomUseCase updateRoomUseCase;
 
     public RoomController(PublishRoomUseCase publishRoomUseCase,
                           SearchRoomsUseCase searchRoomsUseCase,
@@ -38,7 +39,8 @@ public class RoomController {
                           GetAvailableRoomsByDatesUseCase getAvailableRoomsByDatesUseCase,
                           GetRoomRatingUseCase getRoomRatingUseCase,
                           GetBookedDatesUseCase getBookedDatesUseCase,
-                          DeleteRoomUseCase deleteRoomUseCase) {
+                          DeleteRoomUseCase deleteRoomUseCase,
+                          UpdateRoomUseCase updateRoomUseCase) {
         this.publishRoomUseCase = publishRoomUseCase;
         this.searchRoomsUseCase = searchRoomsUseCase;
         this.getRoomUseCase = getRoomUseCase;
@@ -48,6 +50,7 @@ public class RoomController {
         this.getRoomRatingUseCase = getRoomRatingUseCase;
         this.getBookedDatesUseCase = getBookedDatesUseCase;
         this.deleteRoomUseCase = deleteRoomUseCase;
+        this.updateRoomUseCase = updateRoomUseCase;
     }
 
     @PostMapping
@@ -122,6 +125,27 @@ public class RoomController {
             @RequestParam MultipartFile file,
             Authentication auth) {
         var room = uploadRoomImageUseCase.execute(id, auth.getName(), file);
+        return ResponseEntity.ok(RoomResponse.from(room, getRoomRatingUseCase.execute(id)));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RoomResponse> update(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateRoomRequest request,
+            Authentication auth) {
+        var room = updateRoomUseCase.execute(new UpdateRoomCommand(
+                id,
+                auth.getName(),
+                request.title(),
+                request.description(),
+                request.street(),
+                request.city(),
+                request.country(),
+                request.priceAmount(),
+                request.priceCurrency(),
+                request.maxGuests(),
+                request.amenities()
+        ));
         return ResponseEntity.ok(RoomResponse.from(room, getRoomRatingUseCase.execute(id)));
     }
 
