@@ -110,7 +110,7 @@ class RoomTest {
         Money nuevoPrecio = Money.euro(new BigDecimal("100.00"));
 
         room.update("Nuevo título", "Nueva descripción", "Calle Nueva 5",
-                "Barcelona", "España", nuevoPrecio, 4);
+                "Barcelona", "España", nuevoPrecio, 4, null);
 
         assertEquals("Nuevo título", room.getTitle());
         assertEquals("Nueva descripción", room.getDescription());
@@ -129,7 +129,7 @@ class RoomTest {
         UUID idOriginal = room.getId();
 
         room.update("Nuevo título", "Nueva desc", "Calle 2",
-                "Sevilla", "España", precio, 3);
+                "Sevilla", "España", precio, 3, null);
 
         assertEquals(idOriginal, room.getId());
         assertEquals(RoomStatus.ACTIVE, room.getStatus());

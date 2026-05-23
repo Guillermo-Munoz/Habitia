@@ -79,7 +79,8 @@ public class Room {
     }
 
     public void update(String title, String description, String street,
-                       String city, String country, Money price, int maxGuests) {
+                       String city, String country, Money price, int maxGuests,
+                       Set<Amenity> amenities) {
         this.title = title;
         this.description = description;
         this.street = street;
@@ -87,6 +88,9 @@ public class Room {
         this.country = country;
         this.price = price;
         this.maxGuests = maxGuests;
+        this.amenities = amenities != null && !amenities.isEmpty()
+                ? EnumSet.copyOf(amenities)
+                : EnumSet.noneOf(Amenity.class);
     }
 
     public void deactivate() {
